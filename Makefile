@@ -2,7 +2,9 @@ NAME	= fractol
 
 # src / obj files
 SRC		= main.c \
-		  ft_mandelbrot.c
+		  ft_mandelbrot.c \
+		  ft_julia.c \
+		  ft_burningship.c
 
 OBJ		= $(addprefix $(OBJDIR),$(SRC:.c=.o))
 

@@ -6,7 +6,7 @@
 /*   By: gmoindro <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/24 15:16:10 by gmoindro          #+#    #+#             */
-/*   Updated: 2019/08/25 17:23:51 by gmoindro         ###   ########.fr       */
+/*   Updated: 2019/11/16 14:24:26 by gmoindro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,13 @@ typedef struct		s_ptr
 	t_para			para;
 	int				im_x;
 	int				im_y;
+	int				an_x;
+	int				an_y;
+	double			change_x;
+	double			change_y;
+	double			c_r;
+	double			c_i;
+	int				move;
 }					t_ptr;
 
 void				ft_mandelbrot(int im_x, int im_y);
@@ -60,5 +67,26 @@ void				arrow_key(int key, t_ptr *ptr);
 int					mouse_push(int button, int x, int y, t_ptr *ptr);
 void				init_menu_mandelbrot(t_ptr ptr);
 void				click_menu(t_ptr *ptr, int x, int y);
+
+void				ft_julia(int im_x, int im_y);
+void				fractol_julia(t_ptr *ptr);
+int					key_push_julia(int key, t_ptr *ptr);
+void				color_key_julia(int key, t_ptr *ptr);
+void				int_key_julia(int key, t_ptr *ptr);
+void				arrow_key_julia(int key, t_ptr *ptr);
+int					mouse_push_julia(int button, int x, int y, t_ptr *ptr);
+void				init_menu_julia(t_ptr ptr);
+void				click_menu_julia(t_ptr *ptr, int x, int y);
+
+
+void				ft_burningship(int im_x, int im_y);
+void				fractol_burningship(t_ptr *ptr);
+int					key_push_burning(int key, t_ptr *ptr);
+void				color_key_burning(int key, t_ptr *ptr);
+void				int_key_burning(int key, t_ptr *ptr);
+void				arrow_key_burning(int key, t_ptr *ptr);
+int					mouse_push_burning(int button, int x, int y, t_ptr *ptr);
+void				init_menu_burningship(t_ptr ptr);
+void				click_menu_burning(t_ptr *ptr, int x, int y);
 
 #endif
