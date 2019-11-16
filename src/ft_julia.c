@@ -6,7 +6,7 @@
 /*   By: gmoindro <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/19 16:27:29 by gmoindro          #+#    #+#             */
-/*   Updated: 2019/11/16 14:24:23 by gmoindro         ###   ########.fr       */
+/*   Updated: 2019/11/16 15:58:30 by gmoindro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,10 @@ void			fractol_julia(t_ptr *ptr)
 {
 	double	x;
 	double	y;
-	double	z_r, z_i, i, tmp;
+	double	z_r;
+	double	z_i;
+	double	i;
+	double	tmp;
 
 	x = 0;
 	while (x < (ptr->im_x - 200))
@@ -41,8 +44,8 @@ void			fractol_julia(t_ptr *ptr)
 								(int)x) * ptr->img.bpp)) = 0;
 			else
 				*(int *)(ptr->img.p_img + (((int)y * (ptr->im_x - 200) +
-									(int)x) * ptr->img.bpp))
-								= ptr->para.color[ptr->para.nb_col] * i / 8;
+									(int)x) * ptr->img.bpp)) =
+									ptr->para.color[ptr->para.nb_col] * i / 8;
 			y++;
 		}
 		x++;
@@ -125,13 +128,13 @@ void			click_menu_julia(t_ptr *ptr, int x, int y)
 	if (y > (2 * ptr->im_y / 3) && x > (ptr->im_x - 100))
 	{
 		mlx_destroy_image(ptr->mlx, ptr->img.img);
-        mlx_destroy_window(ptr->mlx, ptr->win);
+		mlx_destroy_window(ptr->mlx, ptr->win);
 		ft_burningship(ptr->im_x, ptr->im_y);
 	}
 	else if (y > (2 * ptr->im_y / 3))
 	{
 		mlx_destroy_image(ptr->mlx, ptr->img.img);
-        mlx_destroy_window(ptr->mlx, ptr->win);
+		mlx_destroy_window(ptr->mlx, ptr->win);
 		ft_mandelbrot(ptr->im_x, ptr->im_y);
 	}
 	else if (y > ptr->im_y / 3 && x > (ptr->im_x - 100) && ptr->im_x > 300
@@ -220,6 +223,8 @@ void			init_menu_julia(t_ptr ptr)
 	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, 140, 0xFFFFFF,
 			"Molette : zoom");
 	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, 160, 0xFFFFFF,
+			"s pour figer");
+	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, 180, 0xFFFFFF,
 			"Clic sur le menu !");
 	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, ptr.im_y / 3 + 50,
 			0xFFFFFF, "Agrandir");

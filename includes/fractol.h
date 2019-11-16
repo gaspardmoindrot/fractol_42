@@ -6,7 +6,7 @@
 /*   By: gmoindro <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/24 15:16:10 by gmoindro          #+#    #+#             */
-/*   Updated: 2019/11/16 14:24:26 by gmoindro         ###   ########.fr       */
+/*   Updated: 2019/11/16 15:59:46 by gmoindro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ void				arrow_key(int key, t_ptr *ptr);
 int					mouse_push(int button, int x, int y, t_ptr *ptr);
 void				init_menu_mandelbrot(t_ptr ptr);
 void				click_menu(t_ptr *ptr, int x, int y);
-
 void				ft_julia(int im_x, int im_y);
 void				fractol_julia(t_ptr *ptr);
 int					key_push_julia(int key, t_ptr *ptr);
@@ -77,8 +76,6 @@ void				arrow_key_julia(int key, t_ptr *ptr);
 int					mouse_push_julia(int button, int x, int y, t_ptr *ptr);
 void				init_menu_julia(t_ptr ptr);
 void				click_menu_julia(t_ptr *ptr, int x, int y);
-
-
 void				ft_burningship(int im_x, int im_y);
 void				fractol_burningship(t_ptr *ptr);
 int					key_push_burning(int key, t_ptr *ptr);

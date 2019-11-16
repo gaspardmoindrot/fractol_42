@@ -6,7 +6,7 @@
 /*   By: gmoindro <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/16 11:27:04 by gmoindro          #+#    #+#             */
-/*   Updated: 2019/11/16 14:23:34 by gmoindro         ###   ########.fr       */
+/*   Updated: 2019/11/16 15:49:00 by gmoindro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,12 @@ void			fractol_burningship(t_ptr *ptr)
 {
 	double	x;
 	double	y;
-	double	c_r, c_i, z_r, z_i, i, tmp;
+	double	c_r;
+	double	c_i;
+	double	z_r;
+	double	z_i;
+	double	i;
+	double	tmp;
 
 	x = 0;
 	while (x < (ptr->im_x - 200))
@@ -41,8 +46,8 @@ void			fractol_burningship(t_ptr *ptr)
 								(int)x) * ptr->img.bpp)) = 0;
 			else
 				*(int *)(ptr->img.p_img + (((int)y * (ptr->im_x - 200) +
-								(int)x) * ptr->img.bpp))
-								= ptr->para.color[ptr->para.nb_col] * i / 8;
+								(int)x) * ptr->img.bpp)) =
+								ptr->para.color[ptr->para.nb_col] * i / 8;
 			y++;
 		}
 		x++;
@@ -114,9 +119,9 @@ int				key_push_burning(int key, t_ptr *ptr)
 		exit(EXIT_SUCCESS);
 	}
 	else if (key == 1 && ptr->move == 1)
-        ptr->move = 0;
-    else if (key == 1 && ptr->move == 0)
-        ptr->move = 1;
+		ptr->move = 0;
+	else if (key == 1 && ptr->move == 0)
+		ptr->move = 1;
 	return (0);
 }
 
@@ -125,13 +130,13 @@ void			click_menu_burning(t_ptr *ptr, int x, int y)
 	if (y > (2 * ptr->im_y / 3) && x > (ptr->im_x - 100))
 	{
 		mlx_destroy_image(ptr->mlx, ptr->img.img);
-        mlx_destroy_window(ptr->mlx, ptr->win);
+		mlx_destroy_window(ptr->mlx, ptr->win);
 		ft_mandelbrot(ptr->im_x, ptr->im_y);
 	}
 	else if (y > (2 * ptr->im_y / 3))
 	{
 		mlx_destroy_image(ptr->mlx, ptr->img.img);
-        mlx_destroy_window(ptr->mlx, ptr->win);
+		mlx_destroy_window(ptr->mlx, ptr->win);
 		ft_julia(ptr->im_x, ptr->im_y);
 	}
 	else if (y > ptr->im_y / 3 && x > (ptr->im_x - 100) && ptr->im_x > 300
@@ -245,7 +250,7 @@ void			ft_burningship(int im_x, int im_y)
 
 	ptr.mlx = mlx_init();
 	ptr.an_x = 10000;
-    ptr.an_y = 10000;
+	ptr.an_y = 10000;
 	ptr.im_x = im_x;
 	ptr.im_y = im_y;
 	ptr.win = mlx_new_window(ptr.mlx, ptr.im_x, ptr.im_y, "Fractol");
