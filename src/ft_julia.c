@@ -6,7 +6,7 @@
 /*   By: gmoindro <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/19 16:27:29 by gmoindro          #+#    #+#             */
-/*   Updated: 2019/11/16 15:58:30 by gmoindro         ###   ########.fr       */
+/*   Updated: 2019/11/24 12:33:49 by gmoindro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,41 +14,29 @@
 
 void			fractol_julia(t_ptr *ptr)
 {
-	double	x;
-	double	y;
-	double	z_r;
-	double	z_i;
-	double	i;
-	double	tmp;
-
-	x = 0;
-	while (x < (ptr->im_x - 200))
+	ptr->x = 0;
+	while (ptr->x < (ptr->im_x - 200))
 	{
-		y = 0;
-		while (y < ptr->im_y)
+		ptr->y = 0;
+		while (ptr->y < ptr->im_y)
 		{
 			ptr->c_r = 0.285 + ptr->change_x / 1000;
 			ptr->c_i = 0.01 + ptr->change_y / 1000;
-			z_r = x / ptr->para.zoom + ptr->para.x1 / ptr->para.zoom;
-			z_i = y / ptr->para.zoom + ptr->para.y1 / ptr->para.zoom;
-			i = 0;
-			while (z_r * z_r + z_i * z_i < 8 && i < ptr->para.int_max)
+			ptr->z_r = ptr->x / ptr->para.zoom + ptr->para.x1 / ptr->para.zoom;
+			ptr->z_i = ptr->y / ptr->para.zoom + ptr->para.y1 / ptr->para.zoom;
+			ptr->i = 0;
+			while (ptr->z_r * ptr->z_r + ptr->z_i * ptr->z_i < 8 &&
+					ptr->i < ptr->para.int_max)
 			{
-				tmp = z_r;
-				z_r = z_r * z_r - z_i * z_i + ptr->c_r;
-				z_i = 2 * tmp * z_i + ptr->c_i;
-				i++;
+				ptr->tmp = ptr->z_r;
+				ptr->z_r = ptr->z_r * ptr->z_r - ptr->z_i * ptr->z_i + ptr->c_r;
+				ptr->z_i = 2 * ptr->tmp * ptr->z_i + ptr->c_i;
+				ptr->i++;
 			}
-			if (i == ptr->para.int_max)
-				*(int *)(ptr->img.p_img + (((int)y * (ptr->im_x - 200) +
-								(int)x) * ptr->img.bpp)) = 0;
-			else
-				*(int *)(ptr->img.p_img + (((int)y * (ptr->im_x - 200) +
-									(int)x) * ptr->img.bpp)) =
-									ptr->para.color[ptr->para.nb_col] * i / 8;
-			y++;
+			fractol_mandelbrot_color(ptr);
+			ptr->y++;
 		}
-		x++;
+		ptr->x++;
 	}
 }
 
@@ -154,37 +142,16 @@ void			click_menu_julia(t_ptr *ptr, int x, int y)
 
 int				mouse_push_julia(int button, int x, int y, t_ptr *ptr)
 {
-	double	c_r;
-	double	x_r;
-	double	c_i;
-	double	y_r;
-
 	if (button == 1 && x > (ptr->im_x - 200) && x < ptr->im_x)
 		click_menu_julia(ptr, x, y);
 	else if (button != 4 && button != 5)
 		return (0);
 	else if (button == 4 && x >= 0 && x <= ptr->im_x - 200
 			&& y >= 0 && y <= ptr->im_y)
-	{
-		c_r = x / ptr->para.zoom + ptr->para.x1 / ptr->para.zoom;
-		c_i = y / ptr->para.zoom + ptr->para.y1 / ptr->para.zoom;
-		ptr->para.zoom = ptr->para.zoom * 2;
-		x_r = c_r * ptr->para.zoom - ptr->para.x1;
-		y_r = c_i * ptr->para.zoom - ptr->para.y1;
-		ptr->para.x1 = ptr->para.x1 - (x - x_r);
-		ptr->para.y1 = ptr->para.y1 - (y - y_r);
-	}
+		mouse_push_2(button, x, y, ptr);
 	else if (button == 5 && x >= 0 && x <= ptr->im_x - 200
 			&& y >= 0 && y <= ptr->im_y)
-	{
-		c_i = y / ptr->para.zoom + ptr->para.y1 / ptr->para.zoom;
-		c_r = x / ptr->para.zoom + ptr->para.x1 / ptr->para.zoom;
-		ptr->para.zoom = ptr->para.zoom / 2;
-		x_r = c_r * ptr->para.zoom - ptr->para.x1;
-		y_r = c_i * ptr->para.zoom - ptr->para.y1;
-		ptr->para.x1 = ptr->para.x1 - (x - x_r);
-		ptr->para.y1 = ptr->para.y1 - (y - y_r);
-	}
+		mouse_push_2(button, x, y, ptr);
 	mlx_clear_window(ptr->mlx, ptr->win);
 	init_menu_julia(*ptr);
 	fractol_julia(ptr);
@@ -212,39 +179,16 @@ void			init_menu_julia(t_ptr ptr)
 		}
 		y++;
 	}
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 160, 40, 0xFFFFFF,
-			"Commandes :");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, 80, 0xFFFFFF,
-			"T : + iteration");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, 100, 0xFFFFFF,
-			"Y : - iteration");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, 120, 0xFFFFFF,
-			"Fleches : deplac.");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, 140, 0xFFFFFF,
-			"Molette : zoom");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, 160, 0xFFFFFF,
-			"s pour figer");
+	init_menu_mandelbrot_2(ptr);
 	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, 180, 0xFFFFFF,
-			"Clic sur le menu !");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, ptr.im_y / 3 + 50,
-			0xFFFFFF, "Agrandir");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 155, ptr.im_y / 3 + 70,
-			0xFFFFFF, "la");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, ptr.im_y / 3 + 90,
-			0xFFFFFF, "fenetre!");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 85, ptr.im_y / 3 + 50,
-			0xFFFFFF, "Diminuer");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 55, ptr.im_y / 3 + 70,
-			0xFFFFFF, "la");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 85, ptr.im_y / 3 + 90,
-			0xFFFFFF, "fenetre!");
+			"s pour figer");
 	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, 2 * ptr.im_y / 3 + 70,
 			0xFFFFFF, "Mandel!");
 	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 85, 2 * ptr.im_y / 3 + 70,
 			0xFFFFFF, "Burning!");
 }
 
-static int		mouse_hook_julia(int x, int y, t_ptr *ptr)
+int				mouse_hook_julia(int x, int y, t_ptr *ptr)
 {
 	if (ptr->move == 1)
 		return (0);

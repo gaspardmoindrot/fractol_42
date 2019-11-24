@@ -6,7 +6,7 @@
 /*   By: gmoindro <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/24 15:16:10 by gmoindro          #+#    #+#             */
-/*   Updated: 2019/11/16 15:59:46 by gmoindro         ###   ########.fr       */
+/*   Updated: 2019/11/24 12:35:32 by gmoindro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,12 @@ typedef struct		s_ptr
 	double			change_y;
 	double			c_r;
 	double			c_i;
+	double			z_r;
+	double			z_i;
+	double			x;
+	double			y;
+	double			tmp;
+	double			i;
 	int				move;
 }					t_ptr;
 
@@ -76,6 +82,7 @@ void				arrow_key_julia(int key, t_ptr *ptr);
 int					mouse_push_julia(int button, int x, int y, t_ptr *ptr);
 void				init_menu_julia(t_ptr ptr);
 void				click_menu_julia(t_ptr *ptr, int x, int y);
+int					mouse_hook_julia(int x, int y, t_ptr *ptr);
 void				ft_burningship(int im_x, int im_y);
 void				fractol_burningship(t_ptr *ptr);
 int					key_push_burning(int key, t_ptr *ptr);
@@ -85,5 +92,8 @@ void				arrow_key_burning(int key, t_ptr *ptr);
 int					mouse_push_burning(int button, int x, int y, t_ptr *ptr);
 void				init_menu_burningship(t_ptr ptr);
 void				click_menu_burning(t_ptr *ptr, int x, int y);
+void				mouse_push_2(int button, int x, int y, t_ptr *ptr);
+void				init_menu_mandelbrot_2(t_ptr ptr);
+void				fractol_mandelbrot_color(t_ptr *ptr);
 
 #endif

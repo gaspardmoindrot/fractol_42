@@ -6,51 +6,48 @@
 /*   By: gmoindro <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/24 16:36:02 by gmoindro          #+#    #+#             */
-/*   Updated: 2019/11/16 16:00:08 by gmoindro         ###   ########.fr       */
+/*   Updated: 2019/11/24 12:20:14 by gmoindro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/fractol.h"
 
+void			fractol_mandelbrot_color(t_ptr *ptr)
+{
+	if (ptr->i == ptr->para.int_max)
+		*(int *)(ptr->img.p_img + (((int)ptr->y * (ptr->im_x - 200) +
+						(int)ptr->x) * ptr->img.bpp)) = 0;
+	else
+		*(int *)(ptr->img.p_img + (((int)ptr->y * (ptr->im_x - 200) +
+						(int)ptr->x) * ptr->img.bpp)) =
+			ptr->para.color[ptr->para.nb_col] * ptr->i / 8;
+}
+
 void			fractol_mandelbrot(t_ptr *ptr)
 {
-	double	x;
-	double	y;
-	double	c_r;
-	double	c_i;
-	double	z_r;
-	double	z_i;
-	double	i;
-	double	tmp;
-
-	x = 0;
-	while (x < (ptr->im_x - 200))
+	ptr->x = 0;
+	while (ptr->x < (ptr->im_x - 200))
 	{
-		y = 0;
-		while (y < ptr->im_y)
+		ptr->y = 0;
+		while (ptr->y < ptr->im_y)
 		{
-			c_r = x / ptr->para.zoom + ptr->para.x1 / ptr->para.zoom;
-			c_i = y / ptr->para.zoom + ptr->para.y1 / ptr->para.zoom;
-			z_r = 0;
-			z_i = 0;
-			i = 0;
-			while (z_r * z_r + z_i * z_i < 8 && i < ptr->para.int_max)
+			ptr->c_r = ptr->x / ptr->para.zoom + ptr->para.x1 / ptr->para.zoom;
+			ptr->c_i = ptr->y / ptr->para.zoom + ptr->para.y1 / ptr->para.zoom;
+			ptr->z_r = 0;
+			ptr->z_i = 0;
+			ptr->i = 0;
+			while (ptr->z_r * ptr->z_r + ptr->z_i * ptr->z_i < 8 &&
+					ptr->i < ptr->para.int_max)
 			{
-				tmp = z_r;
-				z_r = z_r * z_r - z_i * z_i + c_r;
-				z_i = 2 * tmp * z_i + c_i;
-				i++;
+				ptr->tmp = ptr->z_r;
+				ptr->z_r = ptr->z_r * ptr->z_r - ptr->z_i * ptr->z_i + ptr->c_r;
+				ptr->z_i = 2 * ptr->tmp * ptr->z_i + ptr->c_i;
+				ptr->i++;
 			}
-			if (i == ptr->para.int_max)
-				*(int *)(ptr->img.p_img + (((int)y * (ptr->im_x - 200) +
-								(int)x) * ptr->img.bpp)) = 0;
-			else
-				*(int *)(ptr->img.p_img + (((int)y * (ptr->im_x - 200) +
-									(int)x) * ptr->img.bpp)) =
-								ptr->para.color[ptr->para.nb_col] * i / 8;
-			y++;
+			fractol_mandelbrot_color(ptr);
+			ptr->y++;
 		}
-		x++;
+		ptr->x++;
 	}
 }
 
@@ -174,39 +171,32 @@ void			click_menu(t_ptr *ptr, int x, int y)
 	}
 }
 
+void			mouse_push_2(int button, int x, int y, t_ptr *ptr)
+{
+	if (button == 4)
+		ptr->para.zoom = ptr->para.zoom * 2;
+	else
+		ptr->para.zoom = ptr->para.zoom / 2;
+	ptr->c_r = x / ptr->para.zoom + ptr->para.x1 / ptr->para.zoom;
+	ptr->c_i = y / ptr->para.zoom + ptr->para.y1 / ptr->para.zoom;
+	ptr->x = ptr->c_r * ptr->para.zoom - ptr->para.x1;
+	ptr->y = ptr->c_i * ptr->para.zoom - ptr->para.y1;
+	ptr->para.x1 = ptr->para.x1 - (x - ptr->x);
+	ptr->para.y1 = ptr->para.y1 - (y - ptr->y);
+}
+
 int				mouse_push(int button, int x, int y, t_ptr *ptr)
 {
-	double	c_r;
-	double	x_r;
-	double	c_i;
-	double	y_r;
-
 	if (button == 1 && x > (ptr->im_x - 200) && x < ptr->im_x)
 		click_menu(ptr, x, y);
 	else if (button != 4 && button != 5)
 		return (0);
 	else if (button == 4 && x >= 0 && x <= ptr->im_x - 200
 			&& y >= 0 && y <= ptr->im_y)
-	{
-		c_r = x / ptr->para.zoom + ptr->para.x1 / ptr->para.zoom;
-		c_i = y / ptr->para.zoom + ptr->para.y1 / ptr->para.zoom;
-		ptr->para.zoom = ptr->para.zoom * 2;
-		x_r = c_r * ptr->para.zoom - ptr->para.x1;
-		y_r = c_i * ptr->para.zoom - ptr->para.y1;
-		ptr->para.x1 = ptr->para.x1 - (x - x_r);
-		ptr->para.y1 = ptr->para.y1 - (y - y_r);
-	}
+		mouse_push_2(button, x, y, ptr);
 	else if (button == 5 && x >= 0 && x <= ptr->im_x - 200
 			&& y >= 0 && y <= ptr->im_y)
-	{
-		c_i = y / ptr->para.zoom + ptr->para.y1 / ptr->para.zoom;
-		c_r = x / ptr->para.zoom + ptr->para.x1 / ptr->para.zoom;
-		ptr->para.zoom = ptr->para.zoom / 2;
-		x_r = c_r * ptr->para.zoom - ptr->para.x1;
-		y_r = c_i * ptr->para.zoom - ptr->para.y1;
-		ptr->para.x1 = ptr->para.x1 - (x - x_r);
-		ptr->para.y1 = ptr->para.y1 - (y - y_r);
-	}
+		mouse_push_2(button, x, y, ptr);
 	mlx_clear_window(ptr->mlx, ptr->win);
 	init_menu_mandelbrot(*ptr);
 	fractol_mandelbrot(ptr);
@@ -214,26 +204,8 @@ int				mouse_push(int button, int x, int y, t_ptr *ptr)
 	return (0);
 }
 
-void			init_menu_mandelbrot(t_ptr ptr)
+void			init_menu_mandelbrot_2(t_ptr ptr)
 {
-	int		x;
-	int		y;
-
-	y = 0;
-	while (y < ptr.im_y)
-	{
-		x = ptr.im_x - 200;
-		while (x < ptr.im_x)
-		{
-			if (x - (ptr.im_x - 200) < 4 || x - (ptr.im_x - 200) > 196
-					|| y < 4 || y > (ptr.im_y - 4) || y == ptr.im_y / 3
-					|| y == (ptr.im_y * 2) / 3
-					|| (x == ptr.im_x - 100 && y > ptr.im_y / 3))
-				mlx_pixel_put(ptr.mlx, ptr.win, x, y, 0xFF0000);
-			x++;
-		}
-		y++;
-	}
 	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 160, 40, 0xFFFFFF,
 			"Commandes :");
 	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, 80, 0xFFFFFF,
@@ -258,6 +230,29 @@ void			init_menu_mandelbrot(t_ptr ptr)
 			0xFFFFFF, "la");
 	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 85, ptr.im_y / 3 + 90,
 			0xFFFFFF, "fenetre!");
+}
+
+void			init_menu_mandelbrot(t_ptr ptr)
+{
+	int		x;
+	int		y;
+
+	y = 0;
+	while (y < ptr.im_y)
+	{
+		x = ptr.im_x - 200;
+		while (x < ptr.im_x)
+		{
+			if (x - (ptr.im_x - 200) < 4 || x - (ptr.im_x - 200) > 196
+					|| y < 4 || y > (ptr.im_y - 4) || y == ptr.im_y / 3
+					|| y == (ptr.im_y * 2) / 3
+					|| (x == ptr.im_x - 100 && y > ptr.im_y / 3))
+				mlx_pixel_put(ptr.mlx, ptr.win, x, y, 0xFF0000);
+			x++;
+		}
+		y++;
+	}
+	init_menu_mandelbrot_2(ptr);
 	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, 2 * ptr.im_y / 3 + 70,
 			0xFFFFFF, "Julia !");
 	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 85, 2 * ptr.im_y / 3 + 70,

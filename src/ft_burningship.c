@@ -6,7 +6,7 @@
 /*   By: gmoindro <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/16 11:27:04 by gmoindro          #+#    #+#             */
-/*   Updated: 2019/11/16 15:49:00 by gmoindro         ###   ########.fr       */
+/*   Updated: 2019/11/24 12:29:41 by gmoindro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,43 +14,29 @@
 
 void			fractol_burningship(t_ptr *ptr)
 {
-	double	x;
-	double	y;
-	double	c_r;
-	double	c_i;
-	double	z_r;
-	double	z_i;
-	double	i;
-	double	tmp;
-
-	x = 0;
-	while (x < (ptr->im_x - 200))
+	ptr->x = 0;
+	while (ptr->x < (ptr->im_x - 200))
 	{
-		y = 0;
-		while (y < ptr->im_y)
+		ptr->y = 0;
+		while (ptr->y < ptr->im_y)
 		{
-			c_r = x / ptr->para.zoom + ptr->para.x1 / ptr->para.zoom;
-			c_i = y / ptr->para.zoom + ptr->para.y1 / ptr->para.zoom;
-			z_r = 0;
-			z_i = 0;
-			i = 0;
-			while (z_r * z_r + z_i * z_i < 8 && i < ptr->para.int_max)
+			ptr->c_r = ptr->x / ptr->para.zoom + ptr->para.x1 / ptr->para.zoom;
+			ptr->c_i = ptr->y / ptr->para.zoom + ptr->para.y1 / ptr->para.zoom;
+			ptr->z_r = 0;
+			ptr->z_i = 0;
+			ptr->i = 0;
+			while (ptr->z_r * ptr->z_r + ptr->z_i * ptr->z_i < 8 &&
+					ptr->i < ptr->para.int_max)
 			{
-				tmp = z_r * z_r - z_i * z_i + c_r;
-				z_r = fabs(2 * z_r * z_i) + c_i;
-				z_i = tmp;
-				i++;
+				ptr->tmp = ptr->z_r * ptr->z_r - ptr->z_i * ptr->z_i + ptr->c_r;
+				ptr->z_r = fabs(2 * ptr->z_r * ptr->z_i) + ptr->c_i;
+				ptr->z_i = ptr->tmp;
+				ptr->i++;
 			}
-			if (i == ptr->para.int_max)
-				*(int *)(ptr->img.p_img + (((int)y * (ptr->im_x - 200) +
-								(int)x) * ptr->img.bpp)) = 0;
-			else
-				*(int *)(ptr->img.p_img + (((int)y * (ptr->im_x - 200) +
-								(int)x) * ptr->img.bpp)) =
-								ptr->para.color[ptr->para.nb_col] * i / 8;
-			y++;
+			fractol_mandelbrot_color(ptr);
+			ptr->y++;
 		}
-		x++;
+		ptr->x++;
 	}
 }
 
@@ -156,37 +142,16 @@ void			click_menu_burning(t_ptr *ptr, int x, int y)
 
 int				mouse_push_burning(int button, int x, int y, t_ptr *ptr)
 {
-	double	c_r;
-	double	x_r;
-	double	c_i;
-	double	y_r;
-
 	if (button == 1 && x > (ptr->im_x - 200) && x < ptr->im_x)
 		click_menu_burning(ptr, x, y);
 	else if (button != 4 && button != 5)
 		return (0);
 	else if (button == 4 && x >= 0 && x <= ptr->im_x - 200
 			&& y >= 0 && y <= ptr->im_y)
-	{
-		c_r = x / ptr->para.zoom + ptr->para.x1 / ptr->para.zoom;
-		c_i = y / ptr->para.zoom + ptr->para.y1 / ptr->para.zoom;
-		ptr->para.zoom = ptr->para.zoom * 2;
-		x_r = c_r * ptr->para.zoom - ptr->para.x1;
-		y_r = c_i * ptr->para.zoom - ptr->para.y1;
-		ptr->para.x1 = ptr->para.x1 - (x - x_r);
-		ptr->para.y1 = ptr->para.y1 - (y - y_r);
-	}
+		mouse_push_2(button, x, y, ptr);
 	else if (button == 5 && x >= 0 && x <= ptr->im_x - 200
 			&& y >= 0 && y <= ptr->im_y)
-	{
-		c_i = y / ptr->para.zoom + ptr->para.y1 / ptr->para.zoom;
-		c_r = x / ptr->para.zoom + ptr->para.x1 / ptr->para.zoom;
-		ptr->para.zoom = ptr->para.zoom / 2;
-		x_r = c_r * ptr->para.zoom - ptr->para.x1;
-		y_r = c_i * ptr->para.zoom - ptr->para.y1;
-		ptr->para.x1 = ptr->para.x1 - (x - x_r);
-		ptr->para.y1 = ptr->para.y1 - (y - y_r);
-	}
+		mouse_push_2(button, x, y, ptr);
 	mlx_clear_window(ptr->mlx, ptr->win);
 	init_menu_burningship(*ptr);
 	fractol_burningship(ptr);
@@ -214,30 +179,7 @@ void			init_menu_burningship(t_ptr ptr)
 		}
 		y++;
 	}
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 160, 40, 0xFFFFFF,
-			"Commandes :");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, 80, 0xFFFFFF,
-			"T : + iteration");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, 100, 0xFFFFFF,
-			"Y : - iteration");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, 120, 0xFFFFFF,
-			"Fleches : deplac.");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, 140, 0xFFFFFF,
-			"Molette : zoom");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, 160, 0xFFFFFF,
-			"Clic sur le menu !");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, ptr.im_y / 3 + 50,
-			0xFFFFFF, "Agrandir");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 155, ptr.im_y / 3 + 70,
-			0xFFFFFF, "la");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, ptr.im_y / 3 + 90,
-			0xFFFFFF, "fenetre!");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 85, ptr.im_y / 3 + 50,
-			0xFFFFFF, "Diminuer");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 55, ptr.im_y / 3 + 70,
-			0xFFFFFF, "la");
-	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 85, ptr.im_y / 3 + 90,
-			0xFFFFFF, "fenetre!");
+	init_menu_mandelbrot_2(ptr);
 	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 185, 2 * ptr.im_y / 3 + 70,
 			0xFFFFFF, "Julia !");
 	mlx_string_put(ptr.mlx, ptr.win, ptr.im_x - 85, 2 * ptr.im_y / 3 + 70,
