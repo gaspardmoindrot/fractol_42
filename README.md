@@ -1,5 +1,5 @@
 # fractol_42
 
-### Projet d’Infographie
+<img width="616" alt="image" src="https://user-images.githubusercontent.com/44836297/219453383-c8a27b28-0958-47a7-a9a6-ea8e208f8e94.png">
 
-Résumé: Ce projet consiste à créer graphiquement de jolies fractales. __Sujet__ -> fract_ol.fr.pdf
+A multithreaded fractal renderer coded in C langage.
